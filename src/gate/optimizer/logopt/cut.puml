@@ -1,0 +1,35 @@
+@startuml mutator.puml
+title .
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::optimizer {
+    class Set<BounderSet> {
+        NumType = BaseType
+    }
+    class BaseType
+    struct Cut<<hashable>> {
+        +leafIDs: Set
+        --
+        ==[Конструкторы]==
+        +Cut()
+        +Cut(**Set** leafIDs)
+        +Cut(**uint16_t** k, **unodered_set<BaseType>** leafIDs, **bool** isImmutable)
+        +Cut(**uint16_t** k, bool, **EntryID** rootID, **bool** isImmutable)
+        ==[Операции]==
+        +operator==(**Cut**)
+        ==[Свойства]==
+        +size(): **uint16_t**
+        +getK(): **uint16_t**
+        ==[Остальные методы]==
+        +mergeNoCheck(**Cut**)
+        +dominates(**Cut**): **bool**
+    }
+}
+namespace eda::utils {
+    class BounderSet<class NumType>
+}
+Cut <- Set
+Set <-- BounderSet
+Set <- BaseType
+@enduml

@@ -1,0 +1,79 @@
+@startuml object.puml
+title Идентифицируемые объекты
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::model {
+    class ObjectID<uint64_t T, size_t S, size_t V, size_t Z> <<hashable>>{
+        +{static} Tag: **const uint64_t**
+        +{static} Size: **const size_t**
+        +{static} Log2: **const size_t**
+        +{static} Bits: **const size_t**
+        +{static} NullFID: **const uint64_t**
+        +{static} NullSID: **const uint64_t**
+        -value: uint64_t
+        --
+        ==[Кострукторы]==
+        +ObjectID(uint64_t value)
+        +ObjectID()
+        ==[Операции]==
+        +operator uint64_t()
+        +operator=(ObjectID): **ObjectID &**
+        ==[Свойства]==
+        +getSID(): uint64_t
+        +getFID(): uint64_t
+        +getUntaggedFID(): uint64_t
+        ==[Остальные методы]==
+        +{static} makeTaggedFID(**uint64_t** objectFID): **ObjectID**
+        +{static} makeUntaggedFID(**uint64_t** objectFID): **ObjectID**
+        +{static} makeFID(**uint64_t** objectFID): **ObjectID**
+        +{static} makeSID(**uint64_t** objectFID): **uint64_t**
+        +{static} getTag(**uint64_t** objectFID): **uint64_t**
+        +{static} сруслTag(**uint64_t** objectFID): **bool**
+    }
+    note left of ObjectID::value
+        Full object identifier (FID)
+    end note
+    note right of ObjectID
+        T is type of tag
+        S is size of ?
+        V is |SID|
+        Z = log2(S) is number of bits
+    end note
+
+    enum ObjectTag<uint8_t> {
+        TAG_NULL
+        TAG_CELL
+        TAG_CELL_ATTR
+        TAG_CELL_TYPE
+        TAG_LINK_END
+        TAG_LINK
+        TAG_NET
+        TAG_SUBNET
+        TAG_STRING
+        TAG_LIST_BLOCK
+    }
+    class CellID<ObjectID> {
+        T = ObjectTag::TAG_CELL
+        S = 32
+        V = 40
+        Z = 5
+    }
+    class CellAttrID<ObjectID> {
+        T = ObjectTag::TAG_CELL_ATTR
+        S = 16
+        V = 40
+        Z = 4
+    }
+    struct Object<typename T, typename TID> {
+        +{static} get(**TID** objectID): **T &**
+        +{static} release(**TID** objectID)
+        +{static} makeFID(**uint64_t** objectSID): **TID**
+        +{static} makeSID(**TID** objectFID): **uint64_t**
+    }
+}
+ObjectID -- CellID
+CellID <-- ObjectTag
+ObjectID -- CellAttrID
+CellAttrID <-- ObjectTag
+@enduml

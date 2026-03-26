@@ -1,0 +1,41 @@
+@startuml lec_mappping.puml
+title Локализация
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::model{
+    struct SubnetPin<uint32_t>
+    class Design
+}
+namespace eda::gate::debugger{
+    struct LecSubnetMapping {
+        -inPins: **vector<pair<SubnetPin,bool>>**
+        -outPins: **vector<pair<SubnetPin,bool>>**
+        --
+        ==[Кострукторы]==
+        +LecSubnetMapping()
+        +LecSubnetMapping(**SubnetPin** nIn, **SubnetPin** nOut)
+        +LecSubnetMapping(**const vector<SubnetPin> &**inPins, **const vector<SubnetPin> &**outPins)
+        ==[Свойства]==
+        +getInNum(): **SubnetPin**
+        +getInPin(**SubnetPin** i): **const SubnetPin &**
+        +inPinIsInverted(**SubnetPin** i): **bool**
+        +getInPins(): **vector<SubnetPin>**
+        ..
+        +getOutNum(): **SubnetPin**
+        +getOutPin(**SubnetPin** i): **const SubnetPin &**
+        +outPinIsInverted(**SubnetPin** i): **bool**
+        +getOutPins(): **vector<SubnetPin>**
+        ==[Остальные методы]==
+        +addInPin(**SubnetPin **pin, **bool** inv)
+        +invertInPin(**SubnetPin **i)
+        ..
+        +addOutPin(**SubnetPin **pin, **bool** inv)
+        +invertOutPin(**SubnetPin **i)
+        ..
+        +clear()
+    }
+}
+
+LecSubnetMapping <-- SubnetPin
+@enduml

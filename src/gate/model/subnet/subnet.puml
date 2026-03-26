@@ -1,0 +1,86 @@
+@startuml subnet.puml
+title Схема
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::model {
+    class BaseType
+    class value_type
+    class SubnetIterBase {
+        #subnet: Subnet
+        #entry: value_type
+        --
+        ==[Коструктор]==
+        +SubnetIterBase(**Subnet** subnet, **value_type** entryID)
+        ==[Операции]==
+        +operator==(**SubnetIterBase**)
+        +operator!=(**SubnetIterBase**)
+        +operator*()
+        +operator->()
+    }
+    class SubnetIterator {
+        --
+        ==[Коструктор]==
+        -SubnetIterator(const Subnet* subnet, value_type)
+        ==[Операции]==
+        +operator++()
+        +operator++(int)
+        +operator--()
+        +operator--(int)
+        ==[Остальные методы]==
+        +next(): SubnetIterator
+        +prev(): SubnetIterator
+    }
+    class RevSubnetIterator {
+        --
+        ==[Коструктор]==
+        -RevSubnetIterator(const Subnet* subnet, value_type)
+        ==[Операции]==
+        +operator++()
+        +operator++(int)
+        +operator--()
+        +operator--(int)
+        ==[Остальные методы]==
+        +next(): SubnetIterator
+        +prev(): SubnetIterator
+    }
+    struct Object<typename T, typename TID>
+    struct SubnetIterable<typename S>
+    class Subnet<<no copy>> {
+        -nIn: **SubnetSize**
+        -nOut: **SubnetSize**
+        -nCell: **SubnetSize**
+        -nBuf: **SubnetSize**
+        -entries: **Array<SubnetCell>**
+        -padding1__: uint64_t
+        -padding2__: uint64_t
+        --
+        ==[Коструктор]==
+        -Subnet(**SubnetPin** nIn, **SubnetPin** nOut, **SubnetSize** nCell, **SubnetSize** nBuf, **vector<SubnetCell>** enties)
+        ==[Свойства]==
+        +getInNum(): **SubnetPin**
+        +getOutNum(): **SubnetPin**
+        +getCellNum(): **SubnetPin**
+        +getBufNum(): **SubnetPin**
+        +getInId(SubnetPin i): **EntryID**
+        +getOutId(SubnetPin i): **EntryID**
+        +getMaxId(): **EntryID**
+        +getCell(EntryID i): **SubnetCell**
+        +getInLink(SubnetPin i): **SubnetLink**
+        +getOutLink(SubnetPin i): **SubnetLink**
+        +getEntries(): **Array<SubnetCell>**
+        +getPathLenght(): **pair<SubnetSize,SubnetSize>**
+        ==[Остальные методы]==
+        +begin()
+        +end()
+    }
+}
+SubnetIterator --|> SubnetIterBase : public
+RevSubnetIterator --|> SubnetIterBase : public
+Subnet --|> Object : public
+Subnet --|> SubnetIterable : public
+
+value_type -left- BaseType: equal
+
+value_type - SubnetIterBase
+@enduml

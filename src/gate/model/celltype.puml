@@ -1,0 +1,37 @@
+@startuml celltype.puml
+title Типы ячеек
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::model {
+    enum CellSymbol<uint16_t> {
+        ..[Inputs & Outputs]..
+        I N
+        OUT
+        ..[Constants]..
+        ZERO
+        ONE
+        ..[Unary gates]..
+        BUF
+        NOT
+        ..
+        AND
+        OR
+        XOR
+        MAJ
+        ITE
+        ..
+        NAND
+        NOR
+        XNOR
+        ..[Flip-flops]..
+        DFF
+        sDDF
+        aDFF
+        ...
+    }
+    note left of CellSymbol::ITE
+        If-Then-Else
+    end note
+}
+@enduml

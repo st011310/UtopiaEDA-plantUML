@@ -1,0 +1,107 @@
+@startuml view.puml
+title Визуализация схемы
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::model {
+    enum SubnetViewKind {
+        EMPTY
+        SMALL
+        LARGE
+        WHOLE
+    }
+    struct SubnetViewEntry {
+        +id: EntryID
+        --
+        ==[Кострукторы]==
+        +SubnetViewEntry()
+        +SubnetViewEntry(**EntryID**)
+        +SubnetViewEntry(**EntryID**, **uint8_t** isIn, **uint8_t** isOut, **uint8_t** isInv, **uint8_t** port)
+        ==[Селекторы]==
+        +isIn(): **bool**
+        +isOut(): **bool**
+        +isInv(): **bool**
+        +getPort(): **bool**
+        ==[Остальные методы]==
+        +{static} getFlags(**uint8_t** isIn, **uint8_t** isOut, **uint8_t** isInv, **uint8_t** port)
+    }
+    class SubnetViewIterator<typename SB> {
+        -index: **size_t**
+        -view: **SubnetView<SB> ***
+        --
+        ==[Кострукторы]==
+        -SubnetViewIterator(**const SubnetView<SB>** *view, **Position**)
+        ==[Операции]==
+        +operator==(**SubnetViewIterator<SB>**): **bool**
+        +operator!=(**SubnetViewIterator<SB>**): **bool**
+        +operator*(): **EntryID &**
+        +operator->(): **EntryID * **
+        +operator++(): **SubnetViewIterator<SB>**
+        +operator++(int): **SubnetViewIterator<SB>**
+        +operator--(): **SubnetViewIterator<SB>**
+        +operator--(int): **SubnetViewIterator<SB>**
+        ==[Селекторы]==
+        +isIn(): bool
+        +isOut(): bool
+        +isInv(): bool
+        -get(**size_t** index): SubnetViewEntry
+        ==[Остальные методы]==
+        +next(): **SubnetViewIterator<SB>**
+        +prev(): **SubnetViewIterator<SB>**
+    }
+    class SubnetIterable<typename S>
+    class SubnetView<typename SB> {
+        -parent: **SubnetAttributedPtr**
+        -kind: **SubnetViewKind**
+        -iomapping: **InOutMappingPtr**
+        -entries
+        --
+        ==[Кострукторы]==
+        +SubnetView()
+        +SubnetView(**SubnetAttributedPtr** parent)
+        +SubnetView(**SubnetAttributedPtr** parent, **EntryID** rootID, **bool** constAsInputs, **SubnetViewKind** kind)
+        +SubnetView(**SubnetAttributedPtr** parent, **EntryIDList** rootIDs, **bool** constAsInputs, **SubnetViewKind** kind)
+        +SubnetView(**SubnetAttributedPtr** parent, **EntryID** rootID, **Cut** cut, **SubnetViewKind** kind)
+        ==[Операции]==
+        +operator=()
+        ==[Свойства]==
+        +getInNum(): **SubnetPin**
+        +getInId(**SubnetPin** i): **EntryID**
+        +getInLink(**SubnetPin** i): **const SubnetLink &**
+        +getInLinks(**SubnetPin** i): **const SubnetLinkList &**
+        ..
+        +getOutNum(): **SubnetPin**
+        +getOutId(**SubnetPin** i): **EntryID**
+        +getOutLink(**SubnetPin** i): **const SubnetLink &**
+        +getOutLinks(**SubnetPin** i): **const SubnetLinkList &**
+        ..
+        +getArity(**EntryID** i): **uint16_t**
+        +getFaninId(**EntryID** i, **uint16_t** j): **EntryID**
+        +getCellNum(): **SubnetSize**
+        +getCell(**EntryID** i): **const SubnetCell &**
+        +getMaxId(): **SubnetSize**
+        +isNull(): **bool**
+        +isEmpty(): **bool**
+        +isSmall(): **bool**
+        +isLarge(): **bool**
+        +isWhole(): **bool**
+        +getExtLinkNum(**bool** different): **SubnetSize**
+        +getInOutMapping(): **InOutMapping**
+        +getParent(): **SubnetAttributed<SB>**
+        +getParentPtr(): **SubnetAttributedPtr**
+        ==[Остальные методы]==
+        +copyFragment(): SubnetBuilderPtr
+        +make(): SubnetID
+        -fillEntries()
+    }
+    struct InOutMapping
+}
+namespace eda::gate::optimizer {
+    class Cut
+}
+SubnetViewEntry --> SubnetViewIterator
+InOutMapping --> SubnetView 
+SubnetViewKind --> SubnetView 
+SubnetView --|> SubnetIterable: SubnetView<SB>
+
+@enduml

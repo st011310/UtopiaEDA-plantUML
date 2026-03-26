@@ -1,0 +1,31 @@
+@startuml mutator_transformer.puml
+title .
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::mutator {
+    class MutatorTransformer {
+        -numCells: unsigned
+        -numMutated: unsigned
+        -replacedCells: CellIDList
+        -replacedFunc: CellSymbolList
+        -cellHasOut: CellIDList
+        --
+        ==[Конструкторы]==
+        +MutatorTransformer(**Subnet** inputNet, **SubnetBuilder**, **int** numOfCells, **CellIDList**, **CellSymbolList** functions)
+        ==[Остальные функции]==
+        +getMutatedCellsList()
+        +getNumMutatedCells()
+        -addMutatedCell(**SubnetBuilder**, **EntryArray** entries, **CellID**, **LinkList**)
+        -filterListCell(**Subnet** inputNet)
+        -hasImpact(**Subnet** inputNet)
+    }
+    note left of MutatorTransformer::getMutatedCellsList
+        Не константый метод
+    end note
+    note left of MutatorTransformer::getNumMutatedCells
+        Не константый метод
+    end note
+}
+
+@enduml

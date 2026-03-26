@@ -1,0 +1,39 @@
+@startuml mutator.puml
+title Заменяет ячейку либо добавляет элементы в контакт
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::mutator {
+    enum MutatorMode {
+        CELL
+        CUT
+    }
+    class Mutator<<no init constuctors>>{
+        +{static} mutate(**MutatorMode**, **Subnet** inputNet, **CellIDList**, **CellSymbolList** function, **unsigned** cutSize)
+        +{static} mutate(**MutatorMode**, **Subnet** inputNet, **unsigned** num, **CellSymbolList** function, **unsigned** cutSize)
+        +{static} mutate(**MutatorMode**, **int** counter, **Subnet** inputNet, **unsigned** num, **CellSymbolList** function, **unsigned** cutSize)
+        +{static} mutate(**MutatorMode**, **CellIDList &**mutatedCells, **Subnet** inputNet, **unsigned** num, **CellSymbolList** function, **unsigned** cutSize)
+    }
+    class CellIDList<vector> {
+        T = CellID
+    }
+    class CellID
+    class SubnetTransformer {
+        S = Subnet
+    }
+}
+namespace eda::gate::optimizer {
+    class SubnetTransformer<typename S>
+}
+namespace eda::gate::model {
+    class CellID
+}
+
+eda::gate::model::CellID -- eda::gate::mutator::CellID: equal
+
+'vector
+eda::gate::mutator::CellID -> CellIDList
+
+Mutator --|> eda::gate::mutator::SubnetTransformer
+eda::gate::mutator::SubnetTransformer -- eda::gate::optimizer::SubnetTransformer
+@enduml

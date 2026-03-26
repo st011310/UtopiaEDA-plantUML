@@ -1,0 +1,149 @@
+@startuml base.puml
+title Локализация
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::matcher{
+    struct NpnTransform
+}
+namespace eda::gate::model{
+    class SubnetBuilder
+    struct EntryID
+    class SubnetView<typename SB>
+    struct SubnetPin<uint32_t>
+}
+namespace eda::gate::debugger{
+    struct LecSubnetMapping
+    struct GoldenTargetPair<typename T> {
+        +golden: T
+        +target: T
+    }
+    struct SubnetPointLabel<uint64_t>
+    class SubnetBuilderPtr<shared_ptr>
+    struct SubnetPair<GoldenTargetPair>
+    struct SubnetCellList
+    struct SubnetPoint<GoldenTargetPair>
+    class SubnetPoints<vector>
+    class SubnetFragment<SubnetView>
+    class SubnetFragments<vector>
+    struct SubnetDiffFragmentInfo {
+        +fragment: SubnetFragment
+        +inputByData: unordered_map<SubnetPointLabel, vector<SubnetPin>
+    }
+
+    class SubnetCone
+    class SubnetCones<vector>
+
+    class SubnetConePtr<shared_ptr>
+    class SubnetClass<vector>
+
+    enum SubnetClassKind <<anonymous>> {
+        SMALL
+        LARGE
+    }
+
+    struct SubnetClassId {
+        +kind: SubnetClassKind
+        +mincode: TruthTable
+        +operator==(const SubnetClassId&)
+    }
+
+    struct SubnetConeRef {
+        +classId: size_t
+        +coneIndex: size_t
+    }
+
+    struct SubnetClassPair {
+        +id: SubnetClassId
+        +classes: GoldenTargetPair<SubnetClass>
+        +automorphs: std::vector<NpnTransform>;
+    }
+    class SubnetClassPairs<vector>
+    class SubnetClassIndex<unordered_map>{
+        key: SubnetClassId
+        value: size_t
+    }
+    class SubnetConeRefs<vector>
+    class SubnetClassMapping<unordered_map>{
+        key: EntryID
+        value: SubnetConeRefs
+    }
+
+    struct SubnetConeGroups {
+        +index: SubnetClassIndex
+        +mappings: GoldenTargetPair<SubnetClassMapping>
+        +storage: SubnetClassPairs 
+    }
+
+    struct SubnetMatch {
+        +cones: GoldenTargetPair<SubnetCone>
+        +mapping: LecSubnetMapping
+    }
+
+    struct SubnetDiff {
+        +fragments: GoldenTargetPair<SubnetFragments>
+        +mapping: LecSubnetMapping
+    }
+
+    class SubnetMatches<vector>
+
+    struct SubnetEcoResult{
+        +matches: SubnetMatches
+        +diff: SubnetDiff
+    }
+}
+
+
+EntryID -down- SubnetCellList : equal
+SubnetCone -up- SubnetFragment : equal
+
+SubnetClassId <-- SubnetClassKind
+SubnetClassMapping <-up- EntryID
+SubnetClassMapping <-- SubnetConeRefs
+SubnetConeGroups <-- SubnetClassIndex
+SubnetConeGroups <-up- SubnetClassMapping
+SubnetConeGroups <-- SubnetClassPairs
+SubnetClassPair <-- SubnetClassId
+SubnetClassPair <-- SubnetClass
+SubnetClassPair <-- NpnTransform
+SubnetDiff <-up- SubnetFragments
+SubnetDiff <-- LecSubnetMapping
+SubnetMatch <-up- SubnetFragments
+SubnetMatch <-- LecSubnetMapping
+SubnetEcoResult <-- SubnetMatches
+SubnetEcoResult <-up- SubnetDiff
+SubnetDiffFragmentInfo <-- SubnetPointLabel
+SubnetDiffFragmentInfo <-right- SubnetFragment
+SubnetDiffFragmentInfo <-- SubnetPin
+
+
+'vector
+SubnetPoints <-up- SubnetPoint
+SubnetMatches <-up- SubnetMatch
+SubnetCones <-up- SubnetCone
+SubnetClassPairs <-- SubnetClassPair
+SubnetFragments <-up- SubnetFragment
+SubnetConeRefs <-- SubnetConeRef
+SubnetClass <-up- SubnetConePtr
+
+'SubnetView
+SubnetFragment <-up- SubnetBuilder
+
+'shared_ptr
+SubnetBuilderPtr <-up- SubnetBuilder
+SubnetConePtr <-up- SubnetCone
+
+'GoldenTargetPair
+SubnetPair <-up- SubnetBuilderPtr
+SubnetPoint <-up- SubnetCellList
+
+'products "1..*"-right-"   1" companies: производство
+'orders "1..*"-left-"1   " markets: продажа
+'(products, orders) .. purchase
+'purchase ..> monetary_unit
+'WeightProducts .> mass_unit
+'VolumeProducts .left.> volume_unit
+'WeightProducts --|> products
+'VolumeProducts --|> products
+'products "1" -- "1..*" product_price: цены в каждый момент времени
+@enduml

@@ -1,0 +1,48 @@
+@startuml transformable.puml
+title Изменяемые схемы
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::model {
+    enum DepthUpdateStategy {
+
+    }
+    class CellCallback<function> {
+        base = void(EntryID)
+    }
+    struct CellCallbacks<<aggregate>> {
+        +onNewCell: **CellCallback**
+        +onCellToDel: **CellCallback**
+        +onReusedCell: **CellCallback**
+        +onRecomputeDepth: **CellCallback**
+        +CellCallbacks()
+        +CellCallbacks(**CellCallback**,**CellCallback**,**CellCallback**,**CellCallback**)
+    }
+    class SubnetTransformable<class S> {
+        +replace<T>(**SubnetIterable<T>**, **InOutMapping**, **CellWeightProvider**, **DepthUpdateStategy**, **CellCallbacks**)
+        +replace(**SubnetBuilder**, **InOutMapping**, **DepthUpdateStategy**, **CellCallbacks**)
+        +replace(**SubnetView<SubnetBuilder>**, **InOutMapping**, **DepthUpdateStategy**, **CellCallbacks**)
+        ..
+        +evaluateReplace<T>(**SubnetIterable<T>**, **InOutMapping**, **CellWeightProvider**, **CellWeightModifier**)
+        +evaluateReplace(**SubnetBuilder**, **InOutMapping**, **CellWeightModifier**)
+        +evaluateReplace(**SubnetView<SubnetBuilder>**, **InOutMapping**, **CellWeightModifier**)
+        ..
+        +replaceCell<T>(**EntryID**, **CellTypeID** newTypeId, **T** newLinks,**uint16_t** newArity,**bool** deleteIfZeroRefCount,**DepthUpdateStategy**,**CellCallbacks**)
+        +replaceCell<T>(**EntryID**, **CellTypeID** newTypeId, **T** newLinks,**uint16_t** newArity,**bool** deleteIfZeroRefCount,**CellCallbacks**)
+        +replaceCell_<T>(**EntryID**, **CellTypeID** newTypeId, **T** newLinks,**uint16_t** newArity,**bool** deleteIfZeroRefCount,**CellCallbacks**)
+        +deleteCell(**EntryID** entryId, **CellCallback** onCellToDel)
+        +replaceWithZero(**EntryID** entryId, **CellCallback** onCellToDel)
+        +replaceWithZero_(**EntryID** entryId, **CellCallback** onCellToDel)
+        +replaceWithOne(**EntryID** entryId, **CellCallback** onCellToDel)
+        +replaceWithOne_(**EntryID** entryId, **CellCallback** onCellToDel)
+        +mergeCells(**EntryID**,**EntryID**, **bool** inv, **CellCallback** onCellToDel)
+        +mergeCells(**MergeMap** entryIDs, **CellCallback** onCellToDel)
+        +rearrange(**bool** deleteBufs)
+        #changeDepth(**EntryID** i, **SubnetDepth** depth)
+    }
+    class SubnetConstructible<class S>
+}
+CellCallback -> CellCallbacks
+CellCallbacks --> SubnetTransformable
+SubnetTransformable --|>SubnetConstructible: public
+@enduml

@@ -1,0 +1,42 @@
+@startuml iomapping.puml
+title Сопоставление входов и выходов
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::model {
+    struct SubnetPin<uint32_t>
+    struct InOutMapping {
+        -ilinks: **SubnetLinkList**
+        -olinks: **SubnetLinkList**
+        -linksToInvert: **unordered_set<pair<Entry,uint32_t>>**
+        --
+        ==[Кострукторы]==
+        +InOutMapping()
+        +InOutMapping(**const size_t** nIn, **const size_t** nOut)
+        +InOutMapping(**const EntryIDList &**inputs, **const EntryIDList &**ouputs)
+        +InOutMapping(**const SubnetLinkList &**ilinks, **const SubnetLinkList &**olinks)
+        ==[Свойства]==
+        +getInNum(): **SubnetPin**
+        +getOutNum(): **SubnetPin**
+        +getInId(**const SubnetPin** i): **EntryID**
+        +getInLink(**const SubnetPin** i): **const SubnetLink &**
+        +getInLinks(): **const SubnetLinkList &**
+        +setInLinks(**SubnetLinkList** links)
+        ..
+        +getOutId(**const SubnetPin** i): **EntryID**
+        +getOutLink(**const SubnetPin** i): **const SubnetLink &**
+        +getOutLinks(): **const SubnetLinkList &**
+        +setOutLinks(**SubnetLinkList** links)
+        ==[Остальные методы]==
+        +addInLink(**const SubnetLink &**ilink)
+        +removeInLink(**const EntryID** entryId)
+        ..
+        +addOutLink(**const SubnetLink &**ilink)
+        +removeOutLink(**const EntryID** entryId)
+        ..
+        +clear()
+        -initializeLinksToInvert()
+    }
+}
+InOutMapping <- SubnetPin
+@enduml

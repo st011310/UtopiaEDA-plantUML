@@ -1,0 +1,71 @@
+@startuml builder.puml
+title Строитель
+set namespaceSeparator ::
+scale 1.5
+'scale 1.5 | scale 200 width | scale 100 height | scale [max] 200x100
+namespace eda::gate::model {
+    class SubnetView
+    class Subnet
+    struct Desc {
+        +prev: EntryID
+        +next: EntryID
+        +depth: SubnetDepth
+        +weights: Weight
+        +reset()
+    }
+    struct Data {
+        +desc: Desc
+        +attr: SubnetAttributes
+    }
+    class SubnetBuilder {
+        -iomapping: InOutMapping
+        -entries: vector<SubnetCell>
+        -data: vector<Data>
+        --
+        ==[Конструкторы]==
+        +SubnetBuilder()
+        +SubnetBuilder(**SubnetSize** estCellNum, bool)
+        +SubnetBuilder(**SubnetIterable<S>** subnet, **CellWeightProvider**)
+        ==[Свойства]==
+        +getInId(**SubnetPin** i): EntryID
+        +getInLink(**SubnetPin** i): SubnetLink
+        +getInLinks(): SubnetLinkList
+        ..
+        +getOutId(**SubnetPin** i): EntryID
+        +getOutLink(**SubnetPin** i): SubnetLink
+        +getOutLinks(): SubnetLinkList
+        ..
+        +getCell(**EntryID** i): SubnetCell
+        +getMaxId(): size_t
+        +getDepth(): SubnetDepth
+        +getDepth(**EntryID** i): SubnetDepth
+        -setDepth(**EntryID** i, **SubnetDepth** depth)
+        +getAttr(**EntryID** i): SubnetAttributes
+        +getWeight(**EntryID** i, **size_t** id): float
+        +setWeight(**EntryID** i, **float** weight, **size_t** id)
+        +getWeights(**EntryID** i): Weight
+        +setWeights(**EntryID** i, **Weight** weight)
+        +getBasis(): Basis
+        +hasInOutMapping(): bool
+        +getInOutMapping(): InOutMapping
+        +getCurrentMark(**Level**): uint32_t
+        +setCurrentMark(**uint32_t** mark, **Level**)
+        ==[Остальные методы]==
+        +{static} makeZero(**SubnetSize** uIn): SubnetID
+        +{static} makeOne(**SubnetSize** uIn): SubnetID
+        +{static} makeConst(**SubnetSize** uIn, **bool** value): SubnetID
+        +beginAtDepth(SubnetDepth depth): SubnetBuilderIterator
+        +endAtDepth(SubnetDepth depth): SubnetBuilderIterator
+        +getAttr(**EntryID** i): SubnetAttributes
+        +getInOutMapping(): InOutMapping
+        +startSession(**Level**)
+        +endSession(**Level**)
+        +make(**bool** deleteBuffers): SubnetID
+        -allocEntry(): EntryID
+    }
+    class SubnetTransformer<typename S>
+}
+Desc -> Data
+Data -> SubnetBuilder
+SubnetBuilder -|> SubnetTransformer: S = SubnetBuilder
+@enduml
